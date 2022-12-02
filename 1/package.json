@@ -1,0 +1,16 @@
+{
+  "name": "1",
+  "version": "1",
+  "description": "the first aoc exercise",
+  "main": "index.ts",
+  "repository": "https://github.com/GarryBell/advent-of-code/",
+  "author": "roman",
+  "license": "N/A",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^18.11.10"
+  },
+  "dependencies": {
+    "eslint": "^8.28.0"
+  }
+}
