@@ -12,6 +12,7 @@ func checkRecord(record string) bool {
 	var recordArr = strings.Split(record, " ")
 	first, _ := strconv.Atoi(recordArr[0])
 	second, _ := strconv.Atoi(recordArr[1])
+	canRemove := true
 	isAscending := first < second
 	for i := 0; i < (len(recordArr) - 1); i++ {
 		current, _ := strconv.Atoi(recordArr[i])
@@ -20,16 +21,22 @@ func checkRecord(record string) bool {
 		if !isAscending {
 			diff = -diff
 		}
-		if 1 > diff || diff > 3 {
-			return false
-		}
+		if 1 > diff || diff > 3 {			
+			if(canRemove){
+				canRemove = false
+				recordArr = append(recordArr[:i], recordArr[i+1:]...)
+				i = i - 1
+			}else{
+				return false
+
+			}
 
 	}
 	return true
 }
 
 func main() {
-	filePath := "input.txt"
+	filePath := "input_small.txt"
 	readFile, _ := os.Open(filePath)
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
