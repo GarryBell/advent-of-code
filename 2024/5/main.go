@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -13,6 +14,13 @@ type Rule struct {
 	second int
 }
 
+func swapVars(a_index int, b_index int, arr []int) []int {
+	newArr := slices.Clone(arr)
+	swapVar := newArr[a_index]
+	newArr[a_index] = newArr[b_index]
+	newArr[b_index] = swapVar
+	return newArr
+}
 func parseRules(rule string) Rule {
 	rules := strings.Split(rule, "|")
 	out := Rule{}
@@ -30,16 +38,17 @@ func find(what int, where []int) (idx int) {
 	return -1
 }
 
-func checkStartOfLine(current int, start []int, rules []Rule) bool {
+func checkStartOfLine(current int, start []int, rules []Rule) int {
 
-	for _, rule := range rules {
+	for _, rule := range rules[:] {
 		if rule.first == current {
-			if find(rule.second, start) != -1 {
-				return false
+			found := find(rule.second, start)
+			if found != -1 {
+				return found
 			}
 		}
 	}
-	return true
+	return -1
 }
 
 func checkLine(line string, rules []Rule) int {
@@ -54,16 +63,23 @@ func checkLine(line string, rules []Rule) int {
 		lineInts = append(lineInts, j)
 	}
 
-	flag := true
+	flag := false
 
-	for index, current := range lineInts { // Iterating twice? good thing I'm not golfing
+	for index, current := range lineInts[:] { // Iterating twice? good thing I'm not golfing
 
 		start := lineInts[:index]
-		if !checkStartOfLine(current, start, rules) {
-			flag = false
+		res := checkStartOfLine(current, start, rules)
+		if res != -1 {
+			fmt.Println("swapping ", lineArray[index], " and ", lineArray[res])
+			fmt.Println("before: ", lineInts)
+			lineInts = slices.Clone(swapVars(index, res, lineInts))
+			fmt.Println("after: ", lineInts)
+			flag = true
+			index = 0
 		}
 	}
 	if flag {
+		fmt.Println("Flagged", lineInts, lineInts[len(lineInts)/2])
 		return lineInts[len(lineInts)/2]
 	}
 
@@ -71,7 +87,7 @@ func checkLine(line string, rules []Rule) int {
 }
 
 func main() {
-	filePath := "input.txt"
+	filePath := "input_small.txt"
 	readFile, _ := os.Open(filePath)
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
